@@ -10,7 +10,7 @@ page and GitHub will tell you whenever the API changes.
 
 - **Free.** No sign up, no API key.
 - **Simple.** You send a latitude and longitude, you get JSON back.
-- **Attribution required.** Show a visible link to [sunrise-sunset.org](https://sunrise-sunset.org) wherever you display the data.
+- **Attribution required.** Credit [sunrise-sunset.org](https://sunrise-sunset.org) wherever people can see where the data comes from ([how](#usage-limits-and-attribution)).
 
 ## Contents
 
@@ -255,13 +255,21 @@ and the [MCP guide](https://sunrise-sunset.org/mcp).
 
 - The API is free for reasonable request volumes. Use date ranges and caching
   to stay well under the limits.
-- **Attribution is required**: show a visible link to
-  [sunrise-sunset.org](https://sunrise-sunset.org) in the app or page where
-  you show the data. For example:
+- **Attribution is required.** Credit Sunrise-Sunset.org wherever people can
+  see where the data comes from:
+  - **Websites and apps:** a visible link to
+    [sunrise-sunset.org](https://sunrise-sunset.org) next to the data, or in
+    the app's About or Credits screen. For example:
 
-  ```html
-  Sun data by <a href="https://sunrise-sunset.org">Sunrise-Sunset.org</a>
-  ```
+    ```html
+    Sun data by <a href="https://sunrise-sunset.org">Sunrise-Sunset.org</a>
+    ```
+  - **Devices with a screen** (TVs, clocks, dashboards, smart displays): the
+    text "Sun data by Sunrise-Sunset.org" where the data is shown, or in the
+    settings or About screen.
+  - **Projects without a screen** (Home Assistant setups, scripts, firmware,
+    voice assistants): a mention of sunrise-sunset.org in the README, the
+    documentation or the store listing.
 
 - Is the API down? Check the [API status page](https://apistatus.sunrise-sunset.org/).
 
