@@ -1,0 +1,588 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sunrise-Sunset.org API",
+    "description": "Free API that provides sunrise, sunset, twilight, golden hour and solar position data for any latitude and longitude. Two versions: v1 (`/json`, stable, supported indefinitely) and v2 (`/v2`, modern defaults: local timezone resolved from coordinates, ISO 8601 with offset, date ranges, golden/blue hour, semantic HTTP errors). Attribution with a link to https://sunrise-sunset.org is required.",
+    "version": "2.0.0",
+    "contact": {
+      "url": "https://sunrise-sunset.org/contact"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.sunrise-sunset.org"
+    },
+    {
+      "url": "http://api.sunrise-sunset.org",
+      "description": "Plain HTTP, for IoT/embedded devices without TLS support"
+    }
+  ],
+  "paths": {
+    "/v2": {
+      "get": {
+        "operationId": "getSunTimesV2",
+        "summary": "Sun times and solar data (v2, recommended)",
+        "description": "All astronomical data for a location and date (or date range). Times in ISO 8601 with offset, in the local timezone of the coordinates unless `tz` is given. If you fetch the same location every day, request a full year once with `date_start`/`date_end` instead of one request per day.",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "description": "Latitude in decimal degrees."
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "description": "Longitude in decimal degrees."
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD, 'today' or 'tomorrow'. Default: today in the local timezone of the coordinates."
+          },
+          {
+            "name": "date_start",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Start of a date range (YYYY-MM-DD). Requires date_end. Max 366 days. Response becomes an array of days."
+          },
+          {
+            "name": "date_end",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "End of a date range (YYYY-MM-DD). Requires date_start."
+          },
+          {
+            "name": "tz",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "IANA timezone identifier (e.g. Europe/Madrid). Abbreviations like PST are rejected. Default: resolved automatically from the coordinates (oceanic coordinates resolve to nautical Etc/GMT+/-N zones -- POSIX sign convention: Etc/GMT+8 means UTC-8)."
+          },
+          {
+            "name": "time_format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "iso8601",
+                "unix"
+              ],
+              "default": "iso8601"
+            },
+            "description": "Output format for event times. 'unix' returns epoch seconds (UTC by definition; tzid/utc_offset are still included as context, and date/tz still select the local calendar day). Null events stay null."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single day (object) or range (object with `days` array). Explicit dates are served with `Cache-Control: immutable` -- same input always returns the same output.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/V2Day"
+                    },
+                    {
+                      "$ref": "#/components/schemas/V2Range"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V2Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited. Wait `Retry-After` seconds, then retry with exponential backoff.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V2Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Seconds to wait before retrying (use exponential backoff)."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/json": {
+      "get": {
+        "operationId": "getSunTimesV1",
+        "summary": "Sun times (v1, stable legacy)",
+        "description": "Original endpoint, supported indefinitely without changes. Defaults to 12h AM/PM times in UTC; `formatted=0` switches to ISO 8601 and day_length in seconds. Known quirks kept for compatibility: errors use `{results:'', status:'INVALID_*'}` with HTTP 400; polar days return epoch-1970 timestamps; an invalid `tzid` silently falls back to UTC. New integrations should use `/v2`.",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Latitude in decimal degrees."
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Longitude in decimal degrees."
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "YYYY-MM-DD or PHP relative formats. Default: today (UTC)."
+          },
+          {
+            "name": "formatted",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ],
+              "default": 1
+            },
+            "description": "1 = 12h AM/PM strings (default), 0 = ISO 8601 and day_length in seconds."
+          },
+          {
+            "name": "tzid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "IANA timezone identifier. Invalid values silently fall back to UTC."
+          },
+          {
+            "name": "callback",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "JSONP callback name."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Response"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Successor version pointer: <https://api.sunrise-sunset.org/v2>; rel=\"successor-version\"."
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST (lat or lng MISSING -- note that non-numeric values are computed as 0 and return status OK, a frozen v1 quirk) or INVALID_DATE.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V1Response"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Successor version pointer: <https://api.sunrise-sunset.org/v2>; rel=\"successor-version\"."
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HourPair": {
+        "type": "object",
+        "properties": {
+          "begin": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "end": {
+            "$ref": "#/components/schemas/EventTime"
+          }
+        },
+        "required": [
+          "begin",
+          "end"
+        ]
+      },
+      "V2Range": {
+        "type": "object",
+        "properties": {
+          "tzid": {
+            "type": "string"
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/V2DayCore"
+            }
+          }
+        },
+        "required": [
+          "tzid",
+          "lat",
+          "lng",
+          "days"
+        ]
+      },
+      "V2Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "examples": [
+              "missing_lat",
+              "missing_lng",
+              "invalid_lat",
+              "invalid_lng",
+              "invalid_date",
+              "invalid_range",
+              "invalid_tz",
+              "rate_limited"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human/LLM-readable instruction to self-correct the request."
+          },
+          "docs": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ]
+      },
+      "V1Response": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "description": "Object on success; empty string on error.",
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "sunrise": {
+                    "type": "string"
+                  },
+                  "sunset": {
+                    "type": "string"
+                  },
+                  "solar_noon": {
+                    "type": "string"
+                  },
+                  "day_length": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ],
+                    "description": "HH:MM:SS string when formatted=1, seconds when formatted=0."
+                  },
+                  "civil_twilight_begin": {
+                    "type": "string"
+                  },
+                  "civil_twilight_end": {
+                    "type": "string"
+                  },
+                  "nautical_twilight_begin": {
+                    "type": "string"
+                  },
+                  "nautical_twilight_end": {
+                    "type": "string"
+                  },
+                  "astronomical_twilight_begin": {
+                    "type": "string"
+                  },
+                  "astronomical_twilight_end": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "string",
+                "const": ""
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "INVALID_REQUEST",
+              "INVALID_DATE",
+              "UNKNOWN_ERROR"
+            ]
+          },
+          "tzid": {
+            "type": "string",
+            "description": "Present on OK responses."
+          }
+        }
+      },
+      "V2DayCore": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "utc_offset": {
+            "type": "string",
+            "examples": [
+              "+02:00"
+            ]
+          },
+          "sunrise": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "sunset": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "solar_noon": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "day_length": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Seconds between sunrise and sunset. 86400 on midnight_sun days, 0 on polar_night days, null on polar transition days (no complete pair to measure)."
+          },
+          "sun_status": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "midnight_sun",
+              "polar_night"
+            ]
+          },
+          "civil_twilight_begin": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "civil_twilight_end": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "nautical_twilight_begin": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "nautical_twilight_end": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "astronomical_twilight_begin": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "astronomical_twilight_end": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "dawn": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "dusk": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "first_light": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "last_light": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "golden_hour": {
+            "type": "object",
+            "properties": {
+              "morning": {
+                "$ref": "#/components/schemas/HourPair"
+              },
+              "evening": {
+                "$ref": "#/components/schemas/HourPair"
+              }
+            }
+          },
+          "blue_hour": {
+            "type": "object",
+            "properties": {
+              "morning": {
+                "$ref": "#/components/schemas/HourPair"
+              },
+              "evening": {
+                "$ref": "#/components/schemas/HourPair"
+              }
+            }
+          },
+          "solar_position": {
+            "type": "object",
+            "properties": {
+              "sunrise_azimuth": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Degrees from north, clockwise."
+              },
+              "sunset_azimuth": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "solar_noon_azimuth": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "solar_noon_altitude": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Degrees above the horizon."
+              }
+            }
+          },
+          "moonrise": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "moonset": {
+            "$ref": "#/components/schemas/EventTime"
+          },
+          "moon_phase": {
+            "type": "string",
+            "enum": [
+              "New Moon",
+              "Waxing Crescent",
+              "First Quarter",
+              "Waxing Gibbous",
+              "Full Moon",
+              "Waning Gibbous",
+              "Last Quarter",
+              "Waning Crescent"
+            ],
+            "description": "Phase at local noon, by sun-moon elongation in 45-degree buckets."
+          },
+          "moon_illumination": {
+            "type": "number",
+            "description": "Illuminated fraction at local noon, percent (0-100)."
+          }
+        },
+        "required": [
+          "date",
+          "utc_offset",
+          "sun_status"
+        ],
+        "description": "Per-day fields, shared by single-day responses and the items of a range `days` array (which omit tzid/lat/lng). Moon: moonrise/moonset are the FIRST rise and LAST set within the local calendar day (at high latitudes the moon can cross the horizon more than twice a day) and are null roughly one day a month each; topocentric, upper limb, standard refraction."
+      },
+      "V2Day": {
+        "description": "Event definitions (solar altitude of the sun's center): sunrise/sunset -0.833 deg; civil twilight -6 deg; nautical -12 deg; astronomical -18 deg; dawn/dusk = civil; first_light/last_light = astronomical; golden_hour -4 deg to +6 deg; blue_hour -6 deg to -4 deg.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/V2DayCore"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tzid": {
+                "type": "string",
+                "description": "Effective IANA timezone."
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "tzid",
+              "lat",
+              "lng"
+            ]
+          }
+        ]
+      },
+      "EventTime": {
+        "type": [
+          "string",
+          "integer",
+          "null"
+        ],
+        "description": "Event time: ISO 8601 with offset in the effective timezone (default) or epoch seconds when time_format=unix. Null when the event does not occur that day -- all events are independently nullable (near the polar circles the sun can rise without setting on the same calendar day)."
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+# Cache files written by examples/python/sun_times.py
+sun_*.json
+__pycache__/

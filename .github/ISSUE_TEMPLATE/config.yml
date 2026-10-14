@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Ideas for the sunrise-sunset.org website
+    url: https://sunrise-sunset.org
+    about: Suggestions for the website go through the "Got a cool idea?" box at the bottom of any location page, not here.
+  - name: Other API questions
+    url: https://sunrise-sunset.org/contact
+    about: For questions that are not bug reports or examples.
+  - name: API status
+    url: https://apistatus.sunrise-sunset.org/
+    about: Check here first if the API seems to be down.

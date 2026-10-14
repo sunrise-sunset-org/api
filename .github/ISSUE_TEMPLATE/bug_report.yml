@@ -1,0 +1,54 @@
+name: Bug report
+description: The API returned something wrong or unexpected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. The fastest way for us to fix it is a request we can run ourselves.
+  - type: input
+    id: url
+    attributes:
+      label: Request URL
+      description: The full URL you called, including all parameters.
+      placeholder: https://api.sunrise-sunset.org/v2?lat=36.72&lng=-4.42&date=2026-08-15
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: API version
+      options:
+        - v2 (/v2)
+        - v1 (/json)
+        - MCP server (/mcp)
+    validations:
+      required: true
+  - type: input
+    id: place
+    attributes:
+      label: Place, date and timezone
+      description: Which place is this, which date, and which timezone did you expect the times in?
+      placeholder: Malaga, Spain. 15 August 2026. Europe/Madrid
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: If you compared with another source, tell us which one.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What did you get instead?
+      description: Paste the relevant part of the response, and the HTTP status code if it was not 200.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: Language or library, device, how often you call the API, etc.

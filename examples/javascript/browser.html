@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunrise and sunset today</title>
+</head>
+<body>
+  <!-- Open this file in a browser. No server needed: the API allows
+       requests from any web page (CORS). -->
+  <h1>Sunrise and sunset in Malaga today</h1>
+  <p id="result">Loading...</p>
+
+  <!-- Attribution with a link is required wherever you show the data. -->
+  <p><small>Sun data by <a href="https://sunrise-sunset.org">Sunrise-Sunset.org</a></small></p>
+
+  <script>
+    fetch('https://api.sunrise-sunset.org/v2?lat=36.72&lng=-4.42')
+      .then((response) => response.json())
+      .then((data) => {
+        // Times are ISO 8601 in the place's own timezone, e.g.
+        // "2026-10-14T08:24:05+02:00". The characters 11 to 16 are "08:24".
+        const time = (iso) => (iso === null ? 'does not happen today' : iso.slice(11, 16));
+        document.getElementById('result').textContent =
+          `Sunrise ${time(data.sunrise)}, sunset ${time(data.sunset)} (${data.tzid})`;
+      })
+      .catch(() => {
+        document.getElementById('result').textContent = 'Could not load the sun times.';
+      });
+  </script>
+</body>
+</html>

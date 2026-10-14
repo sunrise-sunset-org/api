@@ -1,0 +1,49 @@
+# Home Assistant: Sunrise-Sunset.org API v2 as REST sensors.
+# Data by https://sunrise-sunset.org (attribution with a link is required
+# wherever you display it, e.g. in a dashboard card).
+#
+# Paste this into configuration.yaml (or a package file) and restart
+# Home Assistant. It uses the latitude and longitude of your "Home" zone.
+#
+# One request gives all the sensors below. Asking every 6 hours is plenty:
+# "today" is resolved in your own local timezone and only changes at midnight.
+#
+# The times come in ISO 8601 with your local offset, which is exactly what
+# Home Assistant expects for device_class: timestamp sensors.
+#
+# Near the polar circles some events do not happen on some days. The API then
+# returns null and the sensor shows "unknown" for that day.
+
+rest:
+  - resource_template: >-
+      https://api.sunrise-sunset.org/v2?lat={{ state_attr('zone.home', 'latitude') }}&lng={{ state_attr('zone.home', 'longitude') }}
+    scan_interval: 21600
+    sensor:
+      - name: "Sunrise today"
+        value_template: "{{ value_json.sunrise }}"
+        device_class: timestamp
+
+      - name: "Sunset today"
+        value_template: "{{ value_json.sunset }}"
+        device_class: timestamp
+
+      - name: "Dawn today"
+        value_template: "{{ value_json.dawn }}"
+        device_class: timestamp
+
+      - name: "Dusk today"
+        value_template: "{{ value_json.dusk }}"
+        device_class: timestamp
+
+      - name: "Evening golden hour start"
+        value_template: "{{ value_json.golden_hour.evening.begin }}"
+        device_class: timestamp
+
+      - name: "Day length"
+        value_template: "{{ value_json.day_length }}"
+        device_class: duration
+        unit_of_measurement: "s"
+
+      - name: "Moon phase"
+        value_template: "{{ value_json.moon_phase }}"
+        icon: mdi:moon-waning-crescent
