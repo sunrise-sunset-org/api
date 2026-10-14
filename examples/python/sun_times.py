@@ -24,8 +24,7 @@ import urllib.request
 from datetime import datetime
 
 API = "https://api.sunrise-sunset.org/v2"
-# Send a descriptive User-Agent. Requests with urllib's default one
-# ("Python-urllib/3.x") may be rejected with HTTP 403.
+# A descriptive User-Agent is good manners: it tells us which app is calling.
 USER_AGENT = "my-sun-app/1.0"
 
 

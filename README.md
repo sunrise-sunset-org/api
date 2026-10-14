@@ -173,12 +173,7 @@ you see 429s often, check your code for a loop, then fetch date ranges
 shows it in the **viewer's** timezone. If you want the place's own clock
 time, read it from the string: `data.sunrise.slice(11, 16)` gives `"07:34"`.
 
-### 7. HTTP 403 from Python's urllib
-
-Requests sent with urllib's default User-Agent (`Python-urllib/3.x`) may be
-rejected with HTTP 403. Set your own, as the [Python example](examples/python/sun_times.py) does.
-
-### 8. `!secret` inside the URL (Home Assistant)
+### 7. `!secret` inside the URL (Home Assistant)
 
 In Home Assistant, `!secret` only works as a whole YAML value. Written inside
 a URL, as in `resource: https://api.sunrise-sunset.org/json?lat=!secret home_lat&...`,
