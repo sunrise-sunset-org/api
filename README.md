@@ -153,11 +153,15 @@ this on their own.
 
 ### 5. HTTP 429 "Too many requests"
 
-If you send too many requests too quickly you get HTTP 429. Wait the number
-of seconds in the `Retry-After` header, then retry, waiting longer each time
-(exponential backoff). The [Python](examples/python/sun_times.py) and
-[JavaScript](examples/javascript/sun-times.mjs) examples do this. If you get
-429s regularly, switch to date ranges (pitfall 3) and caching (pitfall 4).
+The API allows about 5 requests per second. The limit is mostly there so
+that a script stuck in a loop cannot slow the service down for everyone else:
+normal use never gets near it. Above that you get HTTP 429 with a
+`Retry-After: 1` header: wait 1 second and retry, and if you get 429 again,
+double the wait each time (2, 4, 8 seconds...). The
+[Python](examples/python/sun_times.py) and
+[JavaScript](examples/javascript/sun-times.mjs) examples already do this. If
+you see 429s often, check your code for a loop, then fetch date ranges
+(pitfall 3) and cache the answers (pitfall 4).
 
 ### 6. Showing the time in the wrong timezone (JavaScript)
 
