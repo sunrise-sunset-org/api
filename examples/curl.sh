@@ -2,15 +2,15 @@
 # Sunrise-Sunset.org API examples with curl.
 # Data by https://sunrise-sunset.org (attribution with a link is required).
 #
-# Usage: ./curl.sh            (uses Malaga, Spain)
+# Usage: ./curl.sh            (uses Denver, Colorado)
 #        ./curl.sh 40.71 -74.01  (any latitude and longitude)
 #
 # jq is optional: if it is installed, the output is trimmed to a few fields.
 
 set -euo pipefail
 
-LAT="${1:-36.72}"
-LNG="${2:--4.42}"
+LAT="${1:-39.74}"
+LNG="${2:--104.99}"
 API="https://api.sunrise-sunset.org"
 
 # Pretty-print with jq when available, otherwise print the start of the raw JSON.
@@ -39,7 +39,7 @@ curl -s "$API/v2?lat=$LAT&lng=$LNG&date=2026-12-21&time_format=unix" \
 
 echo
 echo "== 5. Polar night: events that do not happen are null in v2 =="
-curl -s "$API/v2?lat=69.65&lng=18.96&date=2026-12-21" \
+curl -s "$API/v2?lat=71.29&lng=-156.79&date=2026-12-21" \
   | show '{date, tzid, sun_status, sunrise, sunset, day_length}'
 
 echo

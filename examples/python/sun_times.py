@@ -5,7 +5,7 @@ Data by https://sunrise-sunset.org (attribution with a link is required
 wherever you display it).
 
 Usage:
-    python3 sun_times.py                 # Malaga, Spain
+    python3 sun_times.py                 # Denver, Colorado
     python3 sun_times.py 40.71 -74.01    # any latitude and longitude
 
 What it shows:
@@ -84,8 +84,8 @@ def hhmm(iso_time):
 
 
 def main():
-    lat = float(sys.argv[1]) if len(sys.argv) > 1 else 36.72
-    lng = float(sys.argv[2]) if len(sys.argv) > 2 else -4.42
+    lat = float(sys.argv[1]) if len(sys.argv) > 1 else 39.74
+    lng = float(sys.argv[2]) if len(sys.argv) > 2 else -104.99
 
     # 1. Today. No tz needed: v2 answers in the place's local timezone.
     today = get_json({"lat": lat, "lng": lng})
@@ -107,8 +107,8 @@ def main():
         print(f"  {june21['date']}: sunrise {hhmm(june21['sunrise'])}, sunset {hhmm(june21['sunset'])}")
 
     # 3. Near the poles some events do not happen: v2 returns null (None).
-    polar = get_json({"lat": 69.65, "lng": 18.96, "date": "2026-12-21"})
-    print(f"\nTromso on {polar['date']}: sun_status={polar['sun_status']}, "
+    polar = get_json({"lat": 71.29, "lng": -156.79, "date": "2026-12-21"})
+    print(f"\nUtqiagvik on {polar['date']}: sun_status={polar['sun_status']}, "
           f"sunrise={polar['sunrise']}, day_length={polar['day_length']}")
 
     print("\nSun data by https://sunrise-sunset.org")

@@ -48,9 +48,9 @@ Streamable HTTP, with no authentication.
 
 ## Things to ask once connected
 
-- "When is golden hour in Paris tomorrow?"
-- "How much daylight does Oslo lose during November?"
-- "Which nights this month will be darkest for stargazing in Tenerife?"
+- "When is golden hour in San Francisco tomorrow?"
+- "How much daylight does Seattle lose during November?"
+- "Which nights this month will be darkest for stargazing in Moab, Utah?"
 
 ## Testing it by hand
 
@@ -60,7 +60,7 @@ The server speaks JSON-RPC 2.0 over POST, so you can try it with curl:
 curl -s https://api.sunrise-sunset.org/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_sun_times","arguments":{"lat":36.72,"lng":-4.42,"date":"2026-08-15"}}}'
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_sun_times","arguments":{"lat":39.74,"lng":-104.99,"date":"2026-08-15"}}}'
 ```
 
 ## Attribution

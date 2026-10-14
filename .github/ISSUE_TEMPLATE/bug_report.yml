@@ -11,7 +11,7 @@ body:
     attributes:
       label: Request URL
       description: The full URL you called, including all parameters.
-      placeholder: https://api.sunrise-sunset.org/v2?lat=36.72&lng=-4.42&date=2026-08-15
+      placeholder: https://api.sunrise-sunset.org/v2?lat=39.74&lng=-104.99&date=2026-08-15
     validations:
       required: true
   - type: dropdown
@@ -29,7 +29,7 @@ body:
     attributes:
       label: Place, date and timezone
       description: Which place is this, which date, and which timezone did you expect the times in?
-      placeholder: Malaga, Spain. 15 August 2026. Europe/Madrid
+      placeholder: Denver, Colorado. 15 August 2026. America/Denver
     validations:
       required: true
   - type: textarea

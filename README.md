@@ -24,38 +24,38 @@ place on Earth.
 Paste this into a terminal (or open the URL in your browser):
 
 ```sh
-curl "https://api.sunrise-sunset.org/v2?lat=36.72&lng=-4.42&date=2026-08-15"
+curl "https://api.sunrise-sunset.org/v2?lat=39.74&lng=-104.99&date=2026-08-15"
 ```
 
 `lat` and `lng` are the latitude and longitude of the place, in decimal
-degrees (these are Malaga, Spain). You get back something like this
+degrees (these are Denver, Colorado). You get back something like this
 (shortened):
 
 ```json
 {
   "date": "2026-08-15",
-  "tzid": "Europe/Madrid",
-  "utc_offset": "+02:00",
-  "sunrise": "2026-08-15T07:34:53+02:00",
-  "sunset": "2026-08-15T21:08:54+02:00",
-  "solar_noon": "2026-08-15T14:22:22+02:00",
-  "day_length": 48841,
+  "tzid": "America/Denver",
+  "utc_offset": "-06:00",
+  "sunrise": "2026-08-15T06:12:13-06:00",
+  "sunset": "2026-08-15T19:55:56-06:00",
+  "solar_noon": "2026-08-15T13:04:24-06:00",
+  "day_length": 49423,
   "sun_status": "normal",
-  "dawn": "2026-08-15T07:07:21+02:00",
-  "dusk": "2026-08-15T21:36:21+02:00",
+  "dawn": "2026-08-15T05:43:20-06:00",
+  "dusk": "2026-08-15T20:24:43-06:00",
   "golden_hour": {
-    "morning": { "begin": "2026-08-15T07:18:06+02:00", "end": "2026-08-15T08:10:19+02:00" },
-    "evening": { "begin": "2026-08-15T20:33:33+02:00", "end": "2026-08-15T21:25:38+02:00" }
+    "morning": { "begin": "2026-08-15T05:54:37-06:00", "end": "2026-08-15T06:49:15-06:00" },
+    "evening": { "begin": "2026-08-15T19:19:00-06:00", "end": "2026-08-15T20:13:28-06:00" }
   },
   "moon_phase": "Waxing Crescent",
-  "moon_illumination": 9.06
+  "moon_illumination": 11.25
 }
 ```
 
 How to read it:
 
-- Times use the ISO 8601 format. `2026-08-15T07:34:53+02:00` means 15 August
-  2026 at 07:34:53, local time, 2 hours ahead of UTC (the world reference
+- Times use the ISO 8601 format. `2026-08-15T06:12:13-06:00` means 15 August
+  2026 at 06:12:13, local time, 6 hours behind UTC (the world reference
   time). Every programming language can read this format.
 - The times are already in the **local time of the place**. You do not need
   to work out its timezone yourself: `tzid` tells you which one it is.
@@ -95,11 +95,11 @@ These are the problems we see most often in real integrations.
 ### 1. "The times are off by a few hours" (v1)
 
 v1 answers in **UTC** unless you pass `tzid`. v2 answers in the place's
-local time by default. The same day in Malaga:
+local time by default. The same day in Denver:
 
 ```
-v1  /json?lat=36.72&lng=-4.42&date=2026-08-15&formatted=0  ->  "sunrise": "2026-08-15T05:33:43+00:00"
-v2  /v2?lat=36.72&lng=-4.42&date=2026-08-15                ->  "sunrise": "2026-08-15T07:34:53+02:00"
+v1  /json?lat=39.74&lng=-104.99&date=2026-08-15&formatted=0  ->  "sunrise": "2026-08-15T12:11:02+00:00"
+v2  /v2?lat=39.74&lng=-104.99&date=2026-08-15                ->  "sunrise": "2026-08-15T06:12:13-06:00"
 ```
 
 (The two are also about a minute apart: that is the v1 calculation issue
@@ -117,11 +117,11 @@ fields with `1970-01-01T00:00:00+00:00` or `1970-01-01T00:00:01+00:00`.
 Treat any 1970 date from v1 as "does not happen". Also, during the midnight
 sun v1 reports `day_length` 0.
 
-v2 returns `null` instead and tells you why in `sun_status`. Tromso, Norway,
+v2 returns `null` instead and tells you why in `sun_status`. Utqiagvik, Alaska,
 on 21 December 2026:
 
 ```json
-{ "date": "2026-12-21", "tzid": "Europe/Oslo", "sun_status": "polar_night",
+{ "date": "2026-12-21", "tzid": "America/Anchorage", "sun_status": "polar_night",
   "sunrise": null, "sunset": null, "day_length": 0 }
 ```
 
@@ -136,7 +136,7 @@ If you show the same place every day, do not call the API every day. Ask for
 the whole year **once** with `date_start` and `date_end`:
 
 ```sh
-curl "https://api.sunrise-sunset.org/v2?lat=36.72&lng=-4.42&date_start=2027-01-01&date_end=2027-12-31"
+curl "https://api.sunrise-sunset.org/v2?lat=39.74&lng=-104.99&date_start=2027-01-01&date_end=2027-12-31"
 ```
 
 You get `{"tzid", "lat", "lng", "days": [...]}` with one entry per day. A range
@@ -204,7 +204,7 @@ Today (2026-10-14, America/New_York):
   shortest day: 2027-12-21 (9.3 hours of daylight)
   2027-06-21: sunrise 05:25, sunset 20:30
 
-Tromso on 2026-12-21: sun_status=polar_night, sunrise=None, day_length=0
+Utqiagvik on 2026-12-21: sun_status=polar_night, sunrise=None, day_length=0
 ```
 
 **Plain HTTP** (`http://api.sunrise-sunset.org`) works too, for IoT and

@@ -17,8 +17,8 @@ const char* WIFI_SSID     = "your-wifi-name";
 const char* WIFI_PASSWORD = "your-wifi-password";
 
 // Your location in decimal degrees.
-const char* LAT = "36.72";
-const char* LNG = "-4.42";
+const char* LAT = "39.74";
+const char* LNG = "-104.99";
 
 void fetchSunTimes() {
   // No date: the API answers for "today" in the place's own local timezone.

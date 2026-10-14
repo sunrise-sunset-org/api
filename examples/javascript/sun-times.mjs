@@ -43,8 +43,8 @@ function hhmm(isoTime) {
 
 // Demo
 {
-  const lat = process.argv[2] ?? '36.72';
-  const lng = process.argv[3] ?? '-4.42';
+  const lat = process.argv[2] ?? '39.74';
+  const lng = process.argv[3] ?? '-104.99';
 
   // 1. Today, already in the place's local timezone (no tz parameter needed).
   const today = await getSunTimes({ lat, lng });
