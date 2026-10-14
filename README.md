@@ -170,6 +170,23 @@ time, read it from the string: `data.sunrise.slice(11, 16)` gives `"07:34"`.
 Requests sent with urllib's default User-Agent (`Python-urllib/3.x`) may be
 rejected with HTTP 403. Set your own, as the [Python example](examples/python/sun_times.py) does.
 
+### 8. `!secret` inside the URL (Home Assistant)
+
+In Home Assistant, `!secret` only works as a whole YAML value. Written inside
+a URL, as in `resource: https://api.sunrise-sunset.org/json?lat=!secret home_lat&...`,
+it is sent literally. v1 reads that text as latitude 0 and longitude 0 and
+answers with the times of a point in the Atlantic, off the coast of Africa,
+with no error. Build the URL with `resource_template` and your home zone
+instead, as the [Home Assistant example](examples/home-assistant/sunrise_sunset.yaml) does:
+
+```yaml
+resource_template: >-
+  https://api.sunrise-sunset.org/v2?lat={{ state_attr('zone.home', 'latitude') }}&lng={{ state_attr('zone.home', 'longitude') }}
+```
+
+v2 rejects a latitude that is not a number with HTTP 400, so this kind of
+mistake shows up at once.
+
 ## Examples
 
 All examples use v2 and were tested against the live API.
