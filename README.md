@@ -1,8 +1,12 @@
-# Sunrise-Sunset.org API examples
+# Sunrise-Sunset.org API
 
-Ready-to-run examples for the free [Sunrise-Sunset.org API](https://sunrise-sunset.org/api):
+The free [Sunrise-Sunset.org API](https://sunrise-sunset.org/api) on GitHub:
 sunrise, sunset, twilight, golden hour, solar position and moon data for any
-place on Earth.
+place on Earth. Here you find ready-to-run examples, the OpenAPI spec, the
+announcements of every change and a place to report problems.
+
+**Stay up to date:** click *Watch* → *Custom* → *Releases* at the top of this
+page and GitHub will tell you whenever the API changes.
 
 - **Free.** No sign up, no API key.
 - **Simple.** You send a latitude and longitude, you get JSON back.
