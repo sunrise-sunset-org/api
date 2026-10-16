@@ -248,7 +248,9 @@ Claude Code:
 claude mcp add --transport http sunrise-sunset https://api.sunrise-sunset.org/mcp
 ```
 
-Setup for Claude, ChatGPT, Codex and Cursor: [examples/mcp](examples/mcp/README.md)
+Setup for Claude, ChatGPT, Codex, Cursor and VS Code, the tools and an example
+result: **[sunrise-sunset-org/mcp](https://github.com/sunrise-sunset-org/mcp)**,
+the MCP server's own repository. Also [examples/mcp](examples/mcp/README.md)
 and the [MCP guide](https://sunrise-sunset.org/mcp).
 
 ## Usage limits and attribution
