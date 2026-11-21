@@ -225,7 +225,7 @@
             }
           },
           "400": {
-            "description": "INVALID_REQUEST (lat or lng MISSING -- note that non-numeric values are computed as 0 and return status OK, a frozen v1 quirk) or INVALID_DATE.",
+            "description": "INVALID_REQUEST (lat or lng missing, empty, non-numeric or out of range) or INVALID_DATE.",
             "content": {
               "application/json": {
                 "schema": {
@@ -581,7 +581,7 @@
           "integer",
           "null"
         ],
-        "description": "Event time: ISO 8601 with offset in the effective timezone (default) or epoch seconds when time_format=unix. Null when the event does not occur that day -- all events are independently nullable (near the polar circles the sun can rise without setting on the same calendar day)."
+        "description": "Event time: ISO 8601 with offset in the effective timezone (default) or epoch seconds when time_format=unix. An event after local midnight that belongs to the requested day's evening carries the next date. Null when the event does not occur that day -- all events are independently nullable (near the polar circles the sun can rise without setting again)."
       }
     }
   }
